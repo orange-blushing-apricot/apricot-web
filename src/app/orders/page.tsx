@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { Suspense } from "react";
 import { listOrders } from "@/lib/api";
 import { formatPrice } from "@/lib/format";
+import type { OrderStatus } from "@/lib/types";
 import { cancel } from "./actions";
 
 const statusStyles: Record<string, string> = {
@@ -10,9 +12,55 @@ const statusStyles: Record<string, string> = {
   cancelled: "bg-gray-100 text-gray-600",
 };
 
-async function OrderList() {
-  const orders = await listOrders();
-  if (orders.length === 0) return <p className="text-gray-500">No orders yet.</p>;
+const filters: Record<string, OrderStatus[]> = {
+  open: ["pending", "paid"],
+  shipped: ["shipped"],
+  cancelled: ["cancelled"],
+};
+
+const tabs = [
+  { label: "All", value: undefined },
+  { label: "Open", value: "open" },
+  { label: "Shipped", value: "shipped" },
+  { label: "Cancelled", value: "cancelled" },
+];
+
+type SearchParams = PageProps<"/orders">["searchParams"];
+
+async function activeFilter(searchParams: SearchParams) {
+  const { status } = await searchParams;
+  return typeof status === "string" && Object.hasOwn(filters, status) ? status : undefined;
+}
+
+async function OrderTabs({ searchParams }: { searchParams: SearchParams }) {
+  const active = await activeFilter(searchParams);
+
+  return (
+    <nav className="mb-4 flex gap-2 text-sm">
+      {tabs.map((t) => (
+        <Link
+          key={t.label}
+          href={t.value ? `/orders?status=${t.value}` : "/orders"}
+          aria-current={t.value === active ? "page" : undefined}
+          className={`rounded px-3 py-1.5 ${
+            t.value === active ? "bg-orange-600 text-white" : "text-gray-600 hover:bg-orange-50"
+          }`}
+        >
+          {t.label}
+        </Link>
+      ))}
+    </nav>
+  );
+}
+
+async function OrderList({ searchParams }: { searchParams: SearchParams }) {
+  const active = await activeFilter(searchParams);
+  const orders = await listOrders(active ? filters[active] : []);
+  if (orders.length === 0) {
+    return (
+      <p className="text-gray-500">{active ? "No orders match this filter" : "No orders yet."}</p>
+    );
+  }
 
   return (
     <ul className="space-y-3">
@@ -41,12 +89,13 @@ async function OrderList() {
   );
 }
 
-export default function OrdersPage() {
+export default function OrdersPage({ searchParams }: PageProps<"/orders">) {
   return (
     <>
       <h1 className="mb-6 text-2xl font-semibold">Orders</h1>
       <Suspense fallback={<p className="text-gray-500">Loading orders…</p>}>
-        <OrderList />
+        <OrderTabs searchParams={searchParams} />
+        <OrderList searchParams={searchParams} />
       </Suspense>
     </>
   );

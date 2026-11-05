@@ -1,7 +1,7 @@
 import "server-only";
 
 import { mockOrders, mockProducts } from "./mock";
-import type { Order, Product, ProductPage } from "./types";
+import type { Order, OrderStatus, Product, ProductPage } from "./types";
 
 const API_URL = process.env.APRICOT_API_URL;
 const API_KEY = process.env.APRICOT_API_KEY ?? "shopper-demo-key";
@@ -53,9 +53,12 @@ export async function getProduct(id: number): Promise<Product | null> {
   }
 }
 
-export async function listOrders(): Promise<Order[]> {
-  if (!API_URL) return mockOrders;
-  return request<Order[]>("/orders");
+export async function listOrders(statuses: OrderStatus[] = []): Promise<Order[]> {
+  if (!API_URL) {
+    return statuses.length ? mockOrders.filter((o) => statuses.includes(o.status)) : mockOrders;
+  }
+  const params = new URLSearchParams(statuses.map((s) => ["status", s]));
+  return request<Order[]>(params.size ? `/orders?${params}` : "/orders");
 }
 
 export async function createOrder(
