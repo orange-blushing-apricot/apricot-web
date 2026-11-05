@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { CartProvider } from "@/components/cart-provider";
+import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import "./globals.css";
 
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <CartProvider>
           <Header />
           <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
+          <Footer />
         </CartProvider>
       </body>
     </html>
