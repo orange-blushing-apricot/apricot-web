@@ -29,7 +29,7 @@ type SearchParams = PageProps<"/orders">["searchParams"];
 
 async function activeFilter(searchParams: SearchParams) {
   const { status } = await searchParams;
-  return typeof status === "string" && status in filters ? status : undefined;
+  return typeof status === "string" && Object.hasOwn(filters, status) ? status : undefined;
 }
 
 async function OrderTabs({ searchParams }: { searchParams: SearchParams }) {
