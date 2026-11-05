@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCart } from "./cart-provider";
 
-export function Header() {
+export function Header({ children }: { children?: React.ReactNode }) {
   const { lines } = useCart();
   const count = lines.reduce((sum, l) => sum + l.quantity, 0);
 
@@ -16,6 +16,7 @@ export function Header() {
         <div className="flex gap-6 text-sm">
           <Link href="/orders">Orders</Link>
           <Link href="/cart">Cart ({count})</Link>
+          {children}
         </div>
       </nav>
     </header>
