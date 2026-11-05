@@ -1,7 +1,7 @@
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
 export const SESSION_COOKIE = "apricot-session";
-export const SESSION_TTL_SECONDS = 60 * 60 * 8;
+export const SESSION_TTL_SECONDS = 60 * 30;
 
 const USERNAME = "admin";
 const PASSWORD = "admin";
