@@ -26,6 +26,10 @@ async function ProductGrid({ searchParams }: { searchParams: PageProps<"/">["sea
 export default function Home({ searchParams }: PageProps<"/">) {
   return (
     <>
+      <section className="mb-8 rounded-xl bg-gradient-to-r from-orange-200 to-amber-100 px-6 py-10">
+        <h2 className="text-3xl font-bold text-orange-900">Apricot season is here</h2>
+        <p className="mt-2 text-orange-800">Fresh, dried and jarred. Free shipping over $30.</p>
+      </section>
       <div className="mb-6 flex items-end justify-between gap-4">
         <h1 className="text-2xl font-semibold">Shop</h1>
         <form className="flex gap-2">
