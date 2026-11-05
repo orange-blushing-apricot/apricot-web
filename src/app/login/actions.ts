@@ -6,6 +6,7 @@ import {
   checkCredentials,
   createSessionToken,
   SESSION_COOKIE,
+  SESSION_TTL_SECONDS,
   safeRedirectPath,
 } from "@/lib/session";
 
@@ -17,12 +18,12 @@ export async function login(_: LoginState, formData: FormData): Promise<LoginSta
   if (!checkCredentials(username, password)) {
     return { error: "Invalid username or password" };
   }
-  (await cookies()).set(SESSION_COOKIE, createSessionToken(username), {
+  (await cookies()).set(SESSION_COOKIE, createSessionToken(), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: SESSION_TTL_SECONDS,
   });
   redirect(safeRedirectPath(String(formData.get("next") ?? "")));
 }
